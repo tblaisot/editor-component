@@ -1,0 +1,8 @@
+{
+  "name": "web-components-starter",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@webcomponents/custom-elements": "1.0.9"
+  }
+}
