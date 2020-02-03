@@ -135,8 +135,7 @@ function makeDraggable() {
       case 'rotate':
         // coords from center 
         const destAngularCoords = getCoordsFromCenter(destCoords);
-        const angularOffsets = [refs.startAngularCoords[0]- destAngularCoords[0], refs.startAngularCoords[1]-destAngularCoords[1]];
-        const destAngle = getAngle(angularOffsets);
+        const destAngle = getAngle(destAngularCoords);
         const angle = ((destAngle - refs.startAngle)* (180/Math.PI)).toFixed(2);
         svg.setAttribute('style', `transform-origin: ${coords.center[0]}px ${coords.center[1]}px; transform: rotate(${angle}deg);`)
         break;
