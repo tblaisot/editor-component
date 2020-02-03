@@ -92,13 +92,16 @@ function updateCenter(coords){
   center.setAttribute('cy', coords.center[1]);
 }
 
-const coords = calculateCoords(400, 200);
+function updateSize(w,h){
+  const coords = calculateCoords(w, h);
 
-updateCoordsHandles(coords);
-updateCoordsRotateHandle(coords);
-updateCenter(coords);
-updateBox(coords);
-updateSVG(coords);
+  updateCoordsHandles(coords);
+  updateCoordsRotateHandle(coords);
+  updateCenter(coords);
+  updateBox(coords);
+  updateSVG(coords);
+}
+
 
 function setupHandles(){
 //  // rotate
@@ -119,7 +122,8 @@ function makeDraggable() {
     startCoords : null,
     startAngle : null,
     center : null,
-    handle:null
+    handle:null,
+    size: [0,0]
   }
 
   document.addEventListener('mousedown', startDrag);
@@ -129,19 +133,54 @@ function makeDraggable() {
 
   function applyTransformations(evt){
     const destCoords = [evt.pageX, evt.pageY];
-    const offsets = [refs.startCoords[0]- destCoords[0], refs.startCoords[1]-destCoords[1]];
-        
-    switch(refs.handle){
-      case 'rotate':
-        // coords from center 
+    
+
+    if(refs.handle == 'rotate'){
+ // coords from center 
         const destAngularCoords = getCoordsFromCenter(destCoords);
         const destAngle = getAngle(destAngularCoords);
         const angle = ((destAngle - refs.startAngle)* (180/Math.PI)).toFixed(2);
-        svg.setAttribute('style', `transform-origin: ${coords.center[0]}px ${coords.center[1]}px; transform: rotate(${angle}deg);`)
-        break;
-      case 'top_left':
-
-        break;
+        svg.setAttribute('style', `transform-origin: ${refs.center[0]}px ${refs.center[1]}px; transform: rotate(${angle}deg);`)
+    } else {
+      let newsize;
+      let offsets;
+      switch(refs.handle){
+          case 'top_right':
+            offsets = [(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            break;
+          case 'bottom_right':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]-offsets[0], refs.size[1]-offsets[1]];
+            break;
+          case 'top_left':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            break;
+          case 'bottom_left':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            break;
+          case 'top_middle':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0], refs.size[1]-offsets[1]];
+            break;
+          case 'bottom_middle':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0], refs.size[1]-offsets[1]];
+            break;
+          case 'middle_left':
+            offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]+offsets[0], refs.size[1]];
+            break;
+          case 'middle_right':
+            offsets = [(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
+            newsize = [refs.size[0]+offsets[0], refs.size[1]];
+            break;
+      }
+      
+      console.log(newsize);
+      updateSize(newsize[0], newsize[1])
     }
   }
 
@@ -149,13 +188,23 @@ function makeDraggable() {
     if (evt.target.classList.contains('draggable')) {
       refs.selectedElement = evt.target;
       refs.handle = refs.selectedElement.getAttribute('id').replace(/handle_/, '');
+      console.log(refs.handle)
       refs.startCoords = [evt.pageX, evt.pageY];
       switch(refs.handle){
         case 'rotate':
+          refs.center = [center.getAttribute('cx'),center.getAttribute('cy')];
           refs.startAngularCoords = getCoordsFromCenter(refs.startCoords);
           refs.startAngle = getAngle(refs.startAngularCoords);
           break;
+        case 'top_right':
+        case 'bottom_right':
         case 'top_left':
+        case 'bottom_left':
+        case 'top_middle':
+        case 'bottom_middle':
+        case 'middle_left':
+        case 'middle_right':
+          refs.size = [parseInt(box.getAttribute('width')), parseInt(box.getAttribute('height'))]
           break;
       }
 
@@ -170,7 +219,10 @@ function makeDraggable() {
   }
 
   function endDrag(evt) {
-    applyTransformations(evt);
+      if (refs.selectedElement) {
+        // evt.preventDefault();
+        applyTransformations(evt);
+      }
         
     refs.selectedElement = null;
     // refs.startCoords = null;
