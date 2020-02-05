@@ -123,7 +123,8 @@ function makeDraggable() {
     startAngle : null,
     center : null,
     handle:null,
-    size: [0,0]
+    size: [0,0],
+    startSVGPosition: []
   }
 
   document.addEventListener('mousedown', startDrag);
@@ -140,7 +141,8 @@ function makeDraggable() {
         const destAngularCoords = getCoordsFromCenter(destCoords);
         const destAngle = getAngle(destAngularCoords);
         const angle = ((destAngle - refs.startAngle)* (180/Math.PI)).toFixed(2);
-        svg.setAttribute('style', `transform-origin: ${refs.center[0]}px ${refs.center[1]}px; transform: rotate(${angle}deg);`)
+        svg.style.transformOrigin = `${refs.center[0]}px ${refs.center[1]}px`;
+        svg.style.transform = `rotate(${angle}deg)`;
     } else {
       let newsize;
       let offsets;
@@ -148,6 +150,9 @@ function makeDraggable() {
           case 'top_right':
             offsets = [(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            // svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}`;
+            // svg.style.left = `${parseInt(svg.style.left)+ offsets[1]}`;
+            svg.style.top = `${refs.startSVGPosition[1] + offsets[1]}`;
             break;
           case 'bottom_right':
             offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
@@ -190,6 +195,7 @@ function makeDraggable() {
       refs.handle = refs.selectedElement.getAttribute('id').replace(/handle_/, '');
       console.log(refs.handle)
       refs.startCoords = [evt.pageX, evt.pageY];
+      refs.startSVGPosition = [parseInt(svg.style.left), parseInt(svg.style.top)]
       switch(refs.handle){
         case 'rotate':
           refs.center = [center.getAttribute('cx'),center.getAttribute('cy')];
@@ -204,7 +210,7 @@ function makeDraggable() {
         case 'bottom_middle':
         case 'middle_left':
         case 'middle_right':
-          refs.size = [parseInt(box.getAttribute('width')), parseInt(box.getAttribute('height'))]
+          refs.size = [parseInt(box.getAttribute('width')), parseInt(box.getAttribute('height'))];
           break;
       }
 

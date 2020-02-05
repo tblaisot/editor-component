@@ -1,3 +1,16 @@
 h1, h2 {
   font-family: Lato;
 }
+
+.content {
+  width: 800px;
+  height: 800px;
+  background-color: dimgrey;
+  position: relative;
+}
+
+#box-editor {
+  position: relative;
+  top:0px;
+  left: 0px;
+}
