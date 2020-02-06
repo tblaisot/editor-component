@@ -150,9 +150,8 @@ function makeDraggable() {
           case 'top_right':
             offsets = [(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
-            // svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}`;
-            // svg.style.left = `${parseInt(svg.style.left)+ offsets[1]}`;
-            svg.style.top = `${refs.startSVGPosition[1] + offsets[1]}`;
+            // svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}px`;
+            svg.style.top = `${refs.startSVGPosition[1] + offsets[1]}px`;
             break;
           case 'bottom_right':
             offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
@@ -161,14 +160,18 @@ function makeDraggable() {
           case 'top_left':
             offsets = [-(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            svg.style.top = `${refs.startSVGPosition[1] + offsets[1]}px`;
+            svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}px`;
             break;
           case 'bottom_left':
             offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0]+offsets[0], refs.size[1]-offsets[1]];
+            svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}px`;
             break;
           case 'top_middle':
             offsets = [-(destCoords[0]-refs.startCoords[0]), (destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0], refs.size[1]-offsets[1]];
+            svg.style.top = `${refs.startSVGPosition[1] + offsets[1]}px`;
             break;
           case 'bottom_middle':
             offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
@@ -177,6 +180,7 @@ function makeDraggable() {
           case 'middle_left':
             offsets = [-(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
             newsize = [refs.size[0]+offsets[0], refs.size[1]];
+            svg.style.left = `${refs.startSVGPosition[0] - offsets[0]}px`;
             break;
           case 'middle_right':
             offsets = [(destCoords[0]-refs.startCoords[0]), -(destCoords[1]-refs.startCoords[1])];
