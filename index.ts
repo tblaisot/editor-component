@@ -160,7 +160,7 @@ function makeDraggable() {
             refs.relEndCoords = convertCoords(refs.absCenterCoords, refs.absStartAngle, destCoords);
             const offsets = [(refs.relEndCoords[0] - refs.relStartCoords[0]), (refs.relEndCoords[1] - refs.relStartCoords[1])];
 
-            if (refs.handle == 'box' || refs.handle == 'center') {
+            if (refs.handle == 'move') {
                 svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
                 svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
             } else {
@@ -219,8 +219,12 @@ function makeDraggable() {
             const selectedElementId = refs.selectedElement.getAttribute('id');
             if (selectedElementId.match(/handle_.*/)) {
                 refs.handle = selectedElementId.replace(/handle_/, '');
-            } else if (selectedElementId === 'box' || selectedElementId === 'center') {
-                refs.handle = selectedElementId;
+            } else if (
+                selectedElementId === 'box'
+                || selectedElementId === 'center'
+                || selectedElementId === 'box-editor'
+            ) {
+                refs.handle = 'move';
             } else {
                 refs.handle = null;
             }
