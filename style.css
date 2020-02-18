@@ -3,14 +3,15 @@ h1, h2 {
 }
 
 .content {
-  width: 800px;
-  height: 800px;
+  /* width: 800px;
+  height: 800px; */
   background-color: dimgrey;
   position: relative;
 }
 
-#box-editor {
+#lorem-lipsum {
   position: relative;
-  top:0px;
-  left: 0px;
+  width: 300px;
+  top: 100px;
+  left: 100px;
 }
