@@ -160,49 +160,55 @@ function makeDraggable() {
             refs.relEndCoords = convertCoords(refs.absCenterCoords, refs.absStartAngle, destCoords);
             const offsets = [(refs.relEndCoords[0] - refs.relStartCoords[0]), (refs.relEndCoords[1] - refs.relStartCoords[1])];
 
-            /**
-             * regles:
-             * si bottom_ => sizeY = sizeY - offsetY
-             * si top_ => sizeY = sizeY + offsetY
-             * si middle_ => sizeY = sizeY
-             * si _left => sizeY = sizeX - offsetX
-             * si _right => sizeY = sizeX + offsetX
-             * si _middle => sizeY = sizeX
-             */
-            switch (refs.handle) {
-                case 'top_right':
-                    newsize = [refs.size[0] + offsets[0], refs.size[1] + offsets[1]];
-                    svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
-                    break;
-                case 'bottom_right':
-                    newsize = [refs.size[0] + offsets[0], refs.size[1] - offsets[1]];
-                    break;
-                case 'top_left':
-                    newsize = [refs.size[0] - offsets[0], refs.size[1] + offsets[1]];
-                    svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
-                    svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
-                    break;
-                case 'bottom_left':
-                    newsize = [refs.size[0] - offsets[0], refs.size[1] - offsets[1]];
-                    svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
-                    break;
-                case 'top_middle':
-                    newsize = [refs.size[0], refs.size[1] + offsets[1]];
-                    svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
-                    break;
-                case 'bottom_middle':
-                    newsize = [refs.size[0], refs.size[1] - offsets[1]];
-                    break;
-                case 'middle_left':
-                    newsize = [refs.size[0] - offsets[0], refs.size[1]];
-                    svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
-                    break;
-                case 'middle_right':
-                    newsize = [refs.size[0] + offsets[0], refs.size[1]];
-                    break;
-            }
+            if (refs.handle == 'box' || refs.handle == 'center') {
+                svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
+                svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
+            } else {
 
-            updateSize(newsize[0], newsize[1])
+                /**
+                 * regles:
+                 * si bottom_ => sizeY = sizeY - offsetY
+                 * si top_ => sizeY = sizeY + offsetY
+                 * si middle_ => sizeY = sizeY
+                 * si _left => sizeY = sizeX - offsetX
+                 * si _right => sizeY = sizeX + offsetX
+                 * si _middle => sizeY = sizeX
+                 */
+                switch (refs.handle) {
+                    case 'top_right':
+                        newsize = [refs.size[0] + offsets[0], refs.size[1] + offsets[1]];
+                        svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
+                        break;
+                    case 'bottom_right':
+                        newsize = [refs.size[0] + offsets[0], refs.size[1] - offsets[1]];
+                        break;
+                    case 'top_left':
+                        newsize = [refs.size[0] - offsets[0], refs.size[1] + offsets[1]];
+                        svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
+                        svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
+                        break;
+                    case 'bottom_left':
+                        newsize = [refs.size[0] - offsets[0], refs.size[1] - offsets[1]];
+                        svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
+                        break;
+                    case 'top_middle':
+                        newsize = [refs.size[0], refs.size[1] + offsets[1]];
+                        svg.style.top = `${refs.startSVGPosition[1] - offsets[1]}px`;
+                        break;
+                    case 'bottom_middle':
+                        newsize = [refs.size[0], refs.size[1] - offsets[1]];
+                        break;
+                    case 'middle_left':
+                        newsize = [refs.size[0] - offsets[0], refs.size[1]];
+                        svg.style.left = `${refs.startSVGPosition[0] + offsets[0]}px`;
+                        break;
+                    case 'middle_right':
+                        newsize = [refs.size[0] + offsets[0], refs.size[1]];
+                        break;
+                }
+
+                updateSize(newsize[0], newsize[1])
+            }
         }
     }
 
@@ -210,7 +216,14 @@ function makeDraggable() {
 
         if (evt.target.classList.contains('draggable')) {
             refs.selectedElement = evt.target;
-            refs.handle = refs.selectedElement.getAttribute('id').replace(/handle_/, '');
+            const selectedElementId = refs.selectedElement.getAttribute('id');
+            if (selectedElementId.match(/handle_.*/)) {
+                refs.handle = selectedElementId.replace(/handle_/, '');
+            } else if (selectedElementId === 'box' || selectedElementId === 'center') {
+                refs.handle = selectedElementId;
+            } else {
+                refs.handle = null;
+            }
             const absStartCoords = [evt.pageX, evt.pageY];
 
 
@@ -228,6 +241,9 @@ function makeDraggable() {
                     refs.center = [center.getAttribute('cx'), center.getAttribute('cy')];
                     refs.startAngularCoords = getCoordsFromCenter(refs.absCenterCoords, refs.startCoords);
                     refs.startAngle = getAngle(refs.startAngularCoords);
+                    break;
+                case 'box':
+                case 'center':
                     break;
                 case 'top_right':
                 case 'bottom_right':
@@ -262,7 +278,7 @@ function makeDraggable() {
 }
 
 function getSVGAngle() {
-  const result = svg.style.transform.match(/rotate\(([0-9\.]+)deg\)/);
+    const result = svg.style.transform.match(/rotate\(([0-9\.]+)deg\)/);
     return parseInt(result[1])
 }
 
@@ -294,7 +310,7 @@ function convertCoords(center, angle, coords) {
     const [cx, cy] = center;
     const x = (xold - cx);
     const y = -(yold - cy); // redressement des coordonnées
-    const anglerad = Math.PI /180 * angle;
+    const anglerad = Math.PI / 180 * angle;
     const yprime = Math.round(y * Math.cos(anglerad) + x * Math.sin(anglerad));
     const xprime = -Math.round(y * Math.sin(anglerad) - x * Math.cos(anglerad));
     return [xprime, yprime];
